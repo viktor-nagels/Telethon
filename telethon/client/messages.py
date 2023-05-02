@@ -640,8 +640,7 @@ class MessageMethods:
             background: bool = None,
             supports_streaming: bool = False,
             schedule: 'hints.DateLike' = None,
-            comment_to: 'typing.Union[int, types.Message]' = None,
-            nosound_video: bool = None,
+            comment_to: 'typing.Union[int, types.Message]' = None
     ) -> 'types.Message':
         """
         Sends a message to the specified user, chat or channel.
@@ -755,15 +754,6 @@ class MessageMethods:
                 This parameter takes precedence over ``reply_to``. If there is
                 no linked chat, `telethon.errors.sgIdInvalidError` is raised.
 
-            nosound_video (`bool`, optional):
-                Only applicable when sending a video file without an audio
-                track. If set to ``True``, the video will be displayed in
-                Telegram as a video. If set to ``False``, Telegram will attempt
-                to display the video as an animated gif. (It may still display
-                as a video due to other factors.) The value is ignored if set
-                on non-video files. This is set to ``True`` for albums, as gifs
-                cannot be sent in albums.
-
         Returns
             The sent `custom.Message <telethon.tl.custom.message.Message>`.
 
@@ -831,8 +821,7 @@ class MessageMethods:
                 buttons=buttons, clear_draft=clear_draft, silent=silent,
                 schedule=schedule, supports_streaming=supports_streaming,
                 formatting_entities=formatting_entities,
-                comment_to=comment_to, background=background,
-                nosound_video=nosound_video,
+                comment_to=comment_to, background=background
             )
 
         entity = await self.get_input_entity(entity)
@@ -1075,7 +1064,7 @@ class MessageMethods:
                 from it, so the next parameter will be assumed to be the
                 message text.
 
-                You may also pass a :tl:`InputBotInlineMessageID` or :tl:`InputBotInlineMessageID64`,
+                You may also pass a :tl:`InputBotInlineMessageID`,
                 which is the only way to edit messages that were sent
                 after the user selects an inline query result.
 
@@ -1147,7 +1136,7 @@ class MessageMethods:
 
         Returns
             The edited `Message <telethon.tl.custom.message.Message>`,
-            unless `entity` was a :tl:`InputBotInlineMessageID` or :tl:`InputBotInlineMessageID64` in which
+            unless `entity` was a :tl:`InputBotInlineMessageID` in which
             case this method returns a boolean.
 
         Raises
@@ -1173,7 +1162,7 @@ class MessageMethods:
                 # or
                 await client.edit_message(message, 'hello!!!')
         """
-        if isinstance(entity, (types.InputBotInlineMessageID, types.InputBotInlineMessageID64)):
+        if isinstance(entity, types.InputBotInlineMessageID):
             text = text or message
             message = entity
         elif isinstance(entity, types.Message):
@@ -1189,7 +1178,7 @@ class MessageMethods:
                 attributes=attributes,
                 force_document=force_document)
 
-        if isinstance(entity, (types.InputBotInlineMessageID, types.InputBotInlineMessageID64)):
+        if isinstance(entity, types.InputBotInlineMessageID):
             request = functions.messages.EditInlineBotMessageRequest(
                 id=entity,
                 message=text,

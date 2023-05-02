@@ -72,6 +72,7 @@ class UserMethods:
                             results.append(None)
                             continue
                         self.session.process_entities(result)
+                        self._entity_cache.add(result)
                         exceptions.append(None)
                         results.append(result)
                         request_index += 1
@@ -82,6 +83,7 @@ class UserMethods:
                 else:
                     result = await future
                     self.session.process_entities(result)
+                    self._entity_cache.add(result)
                     return result
             except (errors.ServerError, errors.RpcCallFailError,
                     errors.RpcMcgetFailError, errors.InterdcCallErrorError,
@@ -152,17 +154,20 @@ class UserMethods:
                 me = await client.get_me()
                 print(me.username)
         """
-        if input_peer and self._mb_entity_cache.self_id:
-            return self._mb_entity_cache.get(self._mb_entity_cache.self_id)._as_input_peer()
+        if input_peer and self._self_input_peer:
+            return self._self_input_peer
 
         try:
             me = (await self(
                 functions.users.GetUsersRequest([types.InputUserSelf()])))[0]
 
-            if not self._mb_entity_cache.self_id:
-                self._mb_entity_cache.set_self_user(me.id, me.bot, me.access_hash)
+            self._bot = me.bot
+            if not self._self_input_peer:
+                self._self_input_peer = utils.get_input_peer(
+                    me, allow_self=False
+                )
 
-            return utils.get_input_peer(me, allow_self=False) if input_peer else me
+            return self._self_input_peer if input_peer else me
         except errors.UnauthorizedError:
             return None
 
@@ -174,7 +179,7 @@ class UserMethods:
         This property is used in every update, and some like `updateLoginToken`
         occur prior to login, so it gracefully handles when no ID is known yet.
         """
-        return self._mb_entity_cache.self_id
+        return self._self_input_peer.user_id if self._self_input_peer else None
 
     async def is_bot(self: 'TelegramClient') -> bool:
         """
@@ -188,10 +193,10 @@ class UserMethods:
                 else:
                     print('Hello')
         """
-        if self._mb_entity_cache.self_bot is None:
-            await self.get_me(input_peer=True)
+        if self._bot is None:
+            self._bot = (await self.get_me()).bot
 
-        return self._mb_entity_cache.self_bot
+        return self._bot
 
     async def is_user_authorized(self: 'TelegramClient') -> bool:
         """
@@ -412,8 +417,8 @@ class UserMethods:
         try:
             # 0x2d45687 == crc32(b'Peer')
             if isinstance(peer, int) or peer.SUBCLASS_OF_ID == 0x2d45687:
-                return self._mb_entity_cache.get(utils.get_peer_id(peer, add_mark=False))._as_input_peer()
-        except AttributeError:
+                return self._entity_cache[peer]
+        except (AttributeError, KeyError):
             pass
 
         # Then come known strings that take precedence

@@ -253,8 +253,7 @@ class Connection(abc.ABC):
         Disconnects from the server, and clears
         pending outgoing and incoming messages.
         """
-        if not self._connected:
-            return
+        self._connected = False
 
         await helpers._cancel(
             self._log,
@@ -278,8 +277,6 @@ class Connection(abc.ABC):
                     # * OSError: [Errno 32] Broken pipe
                     # * ConnectionResetError
                     self._log.info('%s during disconnect: %s', type(e), e)
-
-        self._connected = False
 
     def send(self, data):
         """
@@ -336,17 +333,15 @@ class Connection(abc.ABC):
                 except (IOError, asyncio.IncompleteReadError) as e:
                     self._log.warning('Server closed the connection: %s', e)
                     await self._recv_queue.put((None, e))
-                    await self.disconnect()
                 except InvalidChecksumError as e:
                     self._log.warning('Server response had invalid checksum: %s', e)
                     await self._recv_queue.put((None, e))
                 except InvalidBufferError as e:
                     self._log.warning('Server response had invalid buffer: %s', e)
                     await self._recv_queue.put((None, e))
-                except Exception as e:
+                except Exception:
                     self._log.exception('Unexpected exception in the receive loop')
                     await self._recv_queue.put((None, e))
-                    await self.disconnect()
                 else:
                     await self._recv_queue.put((data, None))
         except asyncio.CancelledError:
