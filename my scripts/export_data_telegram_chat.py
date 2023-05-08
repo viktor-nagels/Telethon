@@ -5,15 +5,21 @@ from telethon.tl.functions.messages import GetDialogsRequest
 from telethon.tl.functions.channels import GetFullChannelRequest
 from telethon.tl.types import InputPeerEmpty
 from telethon.tl.types import MessageMediaPhoto
+from dotenv import load_dotenv
 from tqdm import tqdm
 import csv
 import os
 
-api_id = 29897393       # Your API ID
-api_hash = 'dc658af18895c141e58532591ccbb239'  # Your API HASH
+load_dotenv()
+
+
+api_id = os.getenv('API_ID')
+api_hash = os.getenv('API_HASH')
+phone_number = os.getenv('PHONE_NUMBER')
 title_Download_Folder = 'DOWNLOADS'
-chat_name = str(input("chat name: "))
-chat_name = '🔥🔞 HOOFDDOEKJES 18+ 🔥🍑'
+# chat_name = str(input("chat name: "))
+# chat_name = '🔥🔞 HOOFDDOEKJES 18+ 🔥🍑'
+# chat_name = 956234626
 print("images(1)")
 print("videos(2)")
 print("files(3)")

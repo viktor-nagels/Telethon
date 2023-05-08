@@ -25,8 +25,10 @@ def get_env(name, message, cast=str):
 
 # Define some variables so the code reads easier
 session = os.environ.get('TG_SESSION', 'printer')
-api_id = get_env('TG_API_ID', 'Enter your API ID: ', int)
-api_hash = get_env('TG_API_HASH', 'Enter your API hash: ')
+# api_id = get_env('TG_API_ID', 'Enter your API ID: ', int)
+# api_hash = get_env('TG_API_HASH', 'Enter your API hash: ')
+api_id = 29897393       # Your API ID
+api_hash = 'dc658af18895c141e58532591ccbb239'  # Your API HASH
 proxy = None  # https://github.com/Anorov/PySocks
 
 

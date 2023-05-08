@@ -3,10 +3,16 @@ from telethon.tl.functions.messages import GetDialogsRequest, GetHistoryRequest
 from telethon.tl.types import InputPeerEmpty
 from tqdm import tqdm
 import csv
+import os
+from dotenv import load_dotenv
 
-api_id = 29897393       # Your API ID
-api_hash = 'dc658af18895c141e58532591ccbb239'  # Your API HASH
-chat_name = 'TEST'
+load_dotenv()
+
+
+api_id = os.getenv('API_ID')
+api_hash = os.getenv('API_HASH')
+phone_number = os.getenv('PHONE_NUMBER')
+chat_name = '🔥🍑SEX ON THE BEACH PRIVE CLUB🔥🍑'
 user_id = 5120940718
 
 def export_messages(client, chat, user_id):
